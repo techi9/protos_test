@@ -1,0 +1,138 @@
+syntax = "proto3";
+
+service AnalyticsConsumer {
+  /*
+    Used for analytics:
+      - peopleTracking
+      - fireAndSmokeDetection
+      - peopleIntrusionDetection
+      - objectIntrusionDetection
+      - abandonedObjectDetection
+    Expected communication flow:
+      For peopleTracking analytics:
+        After rpc that enables this setting for device, analytics-side service creates connection to analytics-consumer service
+        First message being send contains oneof metadata field width rtsp and event type
+        All following messages will contain objectsData with rects
+      For all other analytics:
+        Since those cases are considered more rare than peopleTracking, connection is started only when event occurs
+  */
+  rpc ReportTrackingEvent (stream TrackingData) returns (StatusResponse) {}
+
+  /*
+    Used for analytics:
+      - cameraObstructionDetection
+    Expected communication flow:
+      Once camera obstruction event takes place on device, analytics-consumer expects to receive message
+      with isObstructed being true
+      Once camera is no longer obstructed, analytics-consumer expects to receive message
+      with isObstructed being false
+  */
+  rpc ReportCameraObstructionEvent (CameraObstructionData) returns (StatusResponse) {}
+
+  /*
+    Used for analytics:
+      - crowdCounting
+    Expected communication flow:
+      Once setting is enabled for device, analytics-side service creates connection to analytics-consumer service
+      First message being sent contains metadata with rtsp at which event takes place and array of rois ids that sets indexing
+      for following messages
+      All following messages contain array of numbers of people for corresponding rois
+  */
+  rpc ReportSumOfPeople (stream SumOfPeopleData) returns (StatusResponse) {}
+}
+
+/*
+  TrackingData
+*/
+message TrackingData {
+  oneof data {
+    TrackingEventMetadata metadata = 1; /// metadata of objects being tracked
+    ObjectsData objectsData = 2; /// data of objects being tracked
+  }
+}
+
+/*
+  ObjectsData
+*/
+message ObjectsData {
+  repeated Object objects = 1; /// array of objects being tracked
+}
+
+message Object {
+  Rect rect = 1; /// bounding box of an object
+  string label = 2; /// label of an object
+  double confidence = 4; /// confidence for object labeling - for fire and smoke events debugging purpose
+}
+
+/*
+  Metadata
+*/
+message TrackingEventMetadata {
+  string rtsp = 1; /// rtsp of device at which tracking event takes place (received when analytics settings change)
+  string type = 3; /// type of event
+}
+
+/*
+  Data structure for object position
+*/
+message Rect {
+  Point p1 = 1; /// bounding point
+  Point p2 = 2; /// bounding point
+}
+
+/*
+  Data structure for points
+    x, y: coordinates (TODO: discuss axis directions and origins)
+*/
+message Point {
+  float x = 1; /// x coordinate
+  float y = 2; /// y coordinate
+}
+
+/*
+  Reporting events of camera being obstructed
+*/
+message CameraObstructionData {
+  bool isObstructed = 1; /// where the camera is currently obstructed or not
+  string rtsp = 2; /// RTSP url of device
+}
+
+/*
+  Data for counting sums of people in rois
+*/
+message SumOfPeopleData {
+  oneof data {
+    SumsOfPeopleMetadata metadata = 1; /// reporting rtsp and rois indexation
+    Sums sums = 2; /// value for each roi
+  }
+}
+
+/*
+  rois:
+    for example:
+      metadata: {
+        rtsp: 'rtsp://some-rtsp-url',
+        rois: ['roiIdA', 'roiIdB'],
+      },
+      following Sums:
+      sums: {
+        sum: [123, 456] - 123 people counted for roiIdA, 456 counted for roiIdB
+      }
+*/
+message SumsOfPeopleMetadata {
+  string rtsp = 1; /// rtsp of camera which referred to
+  repeated string rois = 2; /// array of internal rois ids sent previously in Analytics.UpdateSettings call sets up indexing for all following messages with arrays of number
+}
+
+message Sums {
+  repeated uint32 sum = 1;
+}
+
+/*
+  Common status response
+*/
+message StatusResponse {
+  bool success = 1; /// where rpc call was success or not
+  string message = 2; /// info about error
+}
+

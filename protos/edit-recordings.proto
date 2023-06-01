@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+service EditRecordings {
+  rpc EditRecording(EditRequest) returns (StatusReply) {}
+  rpc RemoveRecording(PathRequest) returns (StatusReply) {}
+  rpc RevokeRecording(RevokeRequest) returns (StatusReply) {}
+}
+
+/*
+  Edit recording request message
+*/
+message EditRequest {
+  string recordingId = 1;
+  string url = 2;
+  string contrast = 3;
+  string brightness = 4;
+  string highLight = 5;
+  bool grayScale = 6;
+  string sharpen = 7;
+  repeated string cutStartEnd = 8;
+  string userId = 9;
+}
+
+/*
+  Path of recording request message
+*/
+message PathRequest {
+  string path = 1; // path of archive
+  string recordingId = 2; // Id of recording
+}
+
+/*
+  Revoke archive request message
+*/
+message RevokeRequest {
+  string recordingId = 1; // Id of recording
+}
+
+/*
+  Common status response
+*/
+message StatusReply {
+  bool success = 1; /// where rpc call was success or not
+}

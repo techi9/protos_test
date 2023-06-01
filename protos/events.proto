@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+service Events {
+  rpc CreateEvent (EventData) returns (StatusReply) {}
+  rpc EndTrackingEvent (EndTrackingData) returns (StatusReply) {}
+}
+
+/*
+  Camera rtsp message
+*/
+message EventData {
+  string rtsp = 1; /// rtsp camera with new event
+  string name = 2; /// name of event
+}
+
+/*
+  End of tracking event data message
+*/
+message EndTrackingData {
+  string rtsp = 1; /// rtsp camera with ended event
+  repeated Object objects = 3; /// array of tracked objects
+}
+
+message Object {
+  Rect rect = 1; /// bounding box of an object
+  string label = 2; /// label of an object
+  string timestamp = 3; /// timestamp of object
+  double confidence = 4; /// confidence for object labeling - for fire and smoke events debugging purpose}
+}
+
+message Rect {
+  Point p1 = 1; /// bounding point
+  Point p2 = 2; /// bounding point
+}
+
+message Point {
+  float x = 1; /// x coordinate
+  float y = 2; /// y coordinate
+}
+/*
+  Common status response
+*/
+message StatusReply {
+  bool success = 1; /// where rpc call was success or not
+}

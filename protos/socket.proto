@@ -1,0 +1,215 @@
+syntax = "proto3";
+import "google/protobuf/struct.proto";
+
+service SocketService {
+  rpc EmitLogout (LogoutRequest) returns (StatusResponse) {}
+  rpc EmitDeviceStatusUpdate (DeviceStatusUpdate) returns (StatusResponse) {}
+  rpc EmitMotionDetectionStatus (MotionDetectionStatus) returns (StatusResponse) {}
+  rpc EmitEventsListUpdate (EventsListUpdate) returns (StatusResponse) {}
+  rpc EmitRecordingStatusUpdate (RecordingStatusUpdate) returns (StatusResponse) {}
+  rpc EmitSystemStatus (SystemStatusUpdate) returns (StatusResponse) {}
+  rpc EmitSystemNotifyStatus (SystemNotifyStatusUpdate) returns (StatusResponse) {}
+  rpc EmitOperatorDevices (OperatorDevices) returns (StatusResponse) {}
+  rpc GetOperatorOnlineState (OperatorOnlineState) returns (OperatorOnlineResponse) {}
+  rpc EmitArchiveStatus (ArchiveStatusRequest) returns (StatusResponse) {}
+  rpc EmitNewNotification (NewNotification) returns (StatusResponse) {}
+  rpc EmitSeenNotification (SeenNotification) returns (StatusResponse) {}
+  rpc EmitFramesReady (FramesReadyRequest) returns (StatusResponse) {}
+  rpc EmitEditRecordingReady (EditRecordingReadyRequest) returns (StatusResponse) {}
+  rpc EmitAnalyticsError (ReportAnalyticsErrorRequest) returns (StatusResponse) {}
+}
+
+/*
+  Message for logout deleted admin
+*/
+message LogoutRequest {
+  string destId = 1; /// socketId operator for logout
+  string event = 2; /// event for emitted
+}
+
+/*
+  Recording status update message
+*/
+message RecordingStatusUpdate {
+  string recording = 1; /// recording dto for update status
+  string device = 2; /// device dto
+  string status = 3; /// status of recording
+  repeated string usersIds = 4; /// id users for update recording status
+}
+
+/*
+  Device status update message
+*/
+message DeviceStatusUpdate {
+  repeated string usersIds = 1; /// id users for update recording status
+  string deviceId = 2; /// id device
+  string status = 3; /// status of recording
+}
+
+/*
+  Device object on status update
+ */
+message DeviceOnStatusUpdate {
+  string id = 1;
+  string name = 2;
+}
+/*
+  Motion detected message
+*/
+message MotionDetectionStatus {
+  repeated string usersIds = 1; /// id users for update motion detection status
+  DeviceOnStatusUpdate device = 2; /// id device
+  string status = 3; /// status of motion detection
+}
+
+/*
+  Events list update message
+*/
+message EventsListUpdate {
+  repeated string usersIds = 1; /// id users for update events status
+}
+
+/*
+  SystemInfo update message
+*/
+message SystemStatusUpdate {
+  string systemInfo = 1; /// system information
+}
+
+/*
+  SystemInfo update message
+*/
+message SystemNotifyStatusUpdate {
+  string systemInfo = 1; /// system information
+}
+
+/*
+  Operator devices updated
+*/
+message OperatorDevices {
+  string operatorId = 1; /// id of the operator whose permissions were changed
+  repeated string notifications = 2; /// notifications
+}
+
+/*
+  OperatorOnlineState
+*/
+message OperatorOnlineState {
+  string adminId = 1; /// admin id
+  string operatorId = 2; /// operator id
+}
+
+/*
+  Message for archive status
+*/
+message ArchiveStatusRequest {
+  string userId = 1; /// socketId user for archive status
+  string event = 2; /// event for emitted
+  string status = 3; /// archive status
+  string archiveId = 4; /// archive id
+  string archiveName = 5; /// archive name
+}
+
+/*
+  Device DTO
+ */
+message Device {
+  string name = 1;
+  string id = 2;
+  bool isRecordingEnabled = 3;
+  bool isWatermarkEnabled = 4;
+}
+
+/*
+  File DTO
+*/
+message File {
+  string id = 1;
+  string url = 2;
+  string createdAt = 3;
+}
+
+/*
+  Recording DTO
+*/
+message Recording {
+  string id = 1;
+  string startedAt = 2;
+  string duration = 3;
+  File file = 4;
+}
+
+/*
+    Notification DTO
+*/
+message Notification {
+  string id = 1;
+  string name = 2;
+  bool isAlarm = 3;
+  bool isSeen = 4;
+  string createdAt = 5;
+  repeated string deviceGroups = 6;
+  Device device = 7;
+  bool notificationOnly = 8;
+  google.protobuf.Struct translationValues = 9;
+  Recording recording = 10;
+  repeated Device devices = 11;
+}
+
+/*
+  New notification
+*/
+message NewNotification {
+  Notification notification = 1; /// notification dto
+  repeated string usersIds = 2; /// id users to notify
+}
+
+/*
+  New notification
+*/
+message SeenNotification {
+  repeated string events = 1; /// events id
+  repeated string usersIds = 2; /// id users to notify
+}
+
+/*
+  Frames ready message
+*/
+message FramesReadyRequest {
+  string userId = 1; /// socketId user
+  repeated File frames = 2; /// frames
+  string recordingId = 3; /// recording id
+}
+
+/*
+  Edit recording ready message
+*/
+message EditRecordingReadyRequest {
+  string userId = 1; /// socketId user
+  string recordingId = 2; /// recording id
+  File file = 3; /// edited file recording
+  File thumbnail = 4; /// edited file thumbnail
+}
+
+/*
+  Emit analytics error
+*/
+message ReportAnalyticsErrorRequest {
+  string device = 1; /// device dto
+  repeated string analytics = 2; /// analytics name
+  repeated string usersIds = 3; /// id users for update recording status
+}
+
+/*
+  OperatorOnline status response
+*/
+message OperatorOnlineResponse {
+  bool isOperatorOnline = 1; /// is operator online state
+}
+
+/*
+  Common status response
+*/
+message StatusResponse {
+  bool success = 1; /// where rpc call was success or not
+}

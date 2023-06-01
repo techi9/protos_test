@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+service Restreamer {
+  rpc RestreamCamera (RestreamRequest) returns (RestreamResponse) {}
+  rpc StopRestreamCamera (RemoveRestreamRequest) returns (StatusReply) {}
+  rpc ReportRestreamerStatus (RestreamerStatus) returns (StatusReply) {}
+  rpc ReportDeviceDeploymentToRestreamerFailed (DeviceDeploymentFailedData) returns (StatusReply) {}
+  rpc GetRestreamerStatus (EmptyRequest) returns (RestreamerStatus) {}
+}
+
+/*
+  Empty Request
+*/
+message EmptyRequest {}
+
+/*
+  Re-stream Request
+*/
+message RestreamRequest {
+  string deviceId = 1; /// device id
+  string rtsp = 2; /// rtsp
+}
+
+/*
+  Remove re-stream Request
+*/
+message RemoveRestreamRequest {
+  string deviceId = 1; /// device id
+}
+
+/*
+  Re-stream Request
+*/
+message RestreamResponse {
+  string newUrl = 1; /// url
+}
+
+/*
+  Re-streamer status
+*/
+message RestreamerStatus {
+  bool hasAvailablePorts = 1; /// re-streamer has available ports
+}
+
+/*
+  Status Reply
+*/
+message StatusReply {
+  bool success = 1; /// success
+}
+
+/*
+  Device Deployment Failed Data
+*/
+message DeviceDeploymentFailedData {
+  string deviceId = 1; /// device id
+  string reason = 2; /// reason
+}

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+import "Point";
+
+service Analytics {
+  rpc UpdateSettings (Settings) returns (StatusReply) {}
+}
+
+/*
+  Date to enable or disable setting
+*/
+message Settings {
+  string device_id = 1; /// RTSP URL
+  string rtsp = 2; /// RTSP URL
+  string name = 3; /// type of analytics setting
+  bool isEnabled = 4; // where to enable or disable setting
+  repeated Poly rois = 5; /// optional array of rois for some analytics
+}
+
+/*
+  Data structure for object position
+*/
+message Poly {
+  repeated Point points = 1; /// array of points for polygon
+  string id = 2; /// internal id of roi
+}
+
+/*
+  Data structure for points
+*/
+message Point {
+  float x = 1; /// x coordinate
+  float y = 2; /// y coordinate
+}
+
+/*
+  Common status response
+*/
+message StatusReply {
+  bool success = 1; /// where rpc call was success or not
+  string message = 2; /// info about error
+}
+

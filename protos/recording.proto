@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+service RecordingService {
+  rpc DeployDevice (RecordingDeployRequest) returns (RecordingServiceStatusReply) {}
+  rpc RemoveDeviceDeployment (RecordingDeploymentRemoveRequest) returns (RecordingServiceStatusReply) {}
+  rpc GetDuration(PathRequest) returns (Duration) {}
+  rpc RemoveRecording(PathRequest) returns (RecordingServiceStatusReply) {}
+  rpc GetRecordingServiceStatus (RecordingSystemStatusRequest) returns (RecordingSystemStatusResponse) {}
+  rpc GetRecordingsFrames (RecordingFramesRequest) returns (RecordingServiceStatusReply) {}
+  rpc RemoveRecordingsFrames (RecordingRemoveFramesRequest) returns (RecordingServiceStatusReply) {}
+}
+
+/*
+  Path of recordings request message
+*/
+message PathRequest {
+  string path = 1; // path of recordings
+}
+
+/*
+  Duration of recording message
+*/
+message Duration {
+  string duration = 1; /// duration
+}
+
+/*
+  Deploying camera message
+*/
+message RecordingDeployRequest {
+  string deviceId = 1; /// device id
+  string rtsp = 2; /// rtsp of device
+}
+
+/*
+  Remove deploying camera message
+*/
+message RecordingDeploymentRemoveRequest {
+  string deviceId = 1; /// device id
+  bool connectionIssues = 2; // remove due to connection issues
+}
+
+/*
+  Common status response
+*/
+message RecordingServiceStatusReply {
+  bool success = 1; /// where rpc call was success or not
+}
+
+/*
+  Message system status request
+*/
+message RecordingSystemStatusRequest {}
+
+/*
+  Common status response
+*/
+message RecordingSystemStatusResponse {
+  bool isFreeSpaceAvailable = 1;
+  uint64 used = 2;
+  uint64 total = 3;
+}
+
+/*
+  Get frames for recording
+*/
+message RecordingFramesRequest {
+  string recordingId = 1; /// recording id
+  string path = 2; /// recording for frames
+  string framesFrequency = 3; /// frames frequency
+  string userId = 4; /// user id of requested frames
+  string url = 5; /// url of recording
+}
+
+/*
+  Get frames for recording
+*/
+message RecordingRemoveFramesRequest {
+  string recordingId = 1; /// recording id
+  string framesPath = 2; /// path for frames
+}
+

@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+service RecordingsArchiver {
+  rpc ArchiveRecordings(ArchiveRequest) returns (ArchiveResponse) {}
+  rpc RemoveArchive(PathRequest) returns (StatusReply) {}
+  rpc RevokeArchive(RevokeRequest) returns (StatusReply) {}
+}
+
+/*
+  Archive recordings request message
+*/
+message ArchiveRequest {
+  repeated RecordingData recordings = 1; /// recordings data
+}
+
+/*
+  Recording-data message
+*/
+message RecordingData {
+  string url = 1; /// url of recording
+  string name = 2; /// name of recording
+  string croppedStart = 3; /// cropped start of recording
+  string croppedDuration = 4; /// duration of cropped recording
+  string id = 5; /// recording id
+  string archiveName = 6; /// archive name
+  string isTimestampEnabled = 7; /// enable timestamp
+  string isWatermarkEnabled = 8; /// enable watermark
+  string isBoundingEnabled = 9; /// enable bounding box
+  string timeStart = 10; /// start time of recording
+  string archiveId = 11; /// Id of archive
+  string userId = 12; /// userId
+}
+
+/*
+  response with archive url
+*/
+message ArchiveResponse {
+  string url = 1; /// url of archive
+}
+
+/*
+  Path of archive request message
+*/
+message PathRequest {
+  string path = 1; // path of archive
+}
+
+/*
+  Revoke archive request message
+*/
+message RevokeRequest {
+  string archiveId = 1; // Id of archive
+}
+
+/*
+  Common status response
+*/
+message StatusReply {
+  bool success = 1; /// where rpc call was success or not
+}

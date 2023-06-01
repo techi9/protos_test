@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+service SystemService {
+  rpc GetSystemStatus (SystemStatusRequest) returns (StatusResponse) {}
+}
+
+/*
+  Message system status request
+*/
+message SystemStatusRequest {}
+
+/*
+  Common status response
+*/
+message StatusResponse {
+  bool success = 1;
+}

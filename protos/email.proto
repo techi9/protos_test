@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+service Mailer {
+  rpc Send (EmailRequest) returns (StatusResponse) {}
+}
+
+/*
+  message to send e-mail message
+*/
+message EmailRequest {
+  string to = 1; /// destination of message
+  string subject = 2; /// subject
+  string html = 3; /// message content
+  repeated Attachment attachments = 4; /// message attachments
+}
+
+/*
+  Attachment
+*/
+message Attachment {
+  string path = 1; /// path to attachment
+  string cid = 2; /// cid of attachment
+  string filename = 3; /// name file with attachment
+}
+
+/*
+  Common status response
+*/
+message StatusResponse {
+  bool success = 1; /// where rpc call was success or not
+}

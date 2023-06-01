@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+service UsersService {
+  rpc GetUserByCookie (UserCookieRequest) returns (User) {}
+  rpc SetLastLogInByCookie (UserCookieRequest) returns (StatusResponse) {}
+}
+
+/*
+  User's cookies request message
+*/
+message UserCookieRequest {
+  string cookie = 1; /// user's cookie
+}
+
+/*
+  User's  request message
+*/
+message User {
+  string id = 1; /// user id
+  string email = 2; /// user email
+  string firstName = 3; /// user firstName
+  string lastName = 4; /// user lastName
+  string role = 5; /// user role
+  string passwordUpdateAt = 6; /// user passwordUpdateAt
+  string admin = 7; /// user admin
+}
+
+/*
+  Common status response
+*/
+message StatusResponse {
+  bool success = 1; /// where rpc call was success or not
+}

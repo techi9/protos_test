@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+service Detection {
+  rpc DeployDevice (DeployRequest) returns (StatusReply) {}
+  rpc RemoveDeviceDeployment (RemoveRequest) returns (StatusReply) {}
+}
+
+/*
+  RecordingNode object message
+*/
+message RecordingNode {
+  string _id = 1; /// node id
+  string grpcSocket = 2; /// path of recording
+}
+
+/*
+  RoiVertice object message
+*/
+message RoiVerticeDetection {
+  string _id = 1;
+  string x = 2;
+  string y = 3;
+}
+
+/*
+  Roi vertice Array
+*/
+message RoiVerticArrayDetection {
+  repeated RoiVerticeDetection vertices = 1;
+}
+
+/*
+  Deploying camera message
+*/
+message DeployRequest {
+  string deviceId = 1; /// device id
+  string rtsp = 2; /// rtsp of device
+  RecordingNode recordingNode = 3; /// recording node info
+  string withRecording = 4; /// recording node info
+  repeated RoiVerticArrayDetection rois = 5;
+}
+
+/*
+  Remove deploying camera message
+*/
+message RemoveRequest {
+  string deviceId = 1; /// device id
+}
+
+/*
+  Common status response
+*/
+message StatusReply {
+  bool success = 1; /// where rpc call was success or not
+}

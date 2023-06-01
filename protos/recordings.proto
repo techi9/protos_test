@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+service Recordings {
+  rpc setHashToRecording (setHashRequest) returns (setHashResponse) {}
+  rpc reportArchiveReady(ArchiveReady) returns (StatusResponse) {}
+  rpc getRecordingsForInitialArchiving(RecordingsForInitialArchiving) returns (RecordingsResponse) {}
+  rpc getRecordingsForInitialEdit(RecordingsForInitialEdit) returns (RecordingsEditResponse) {}
+  rpc reportEditRecordingReady(EditReady) returns (StatusResponse) {}
+}
+
+message RecordingsForInitialArchiving {}
+
+message RecordingsForInitialEdit {}
+
+/*
+  Recording-data
+*/
+message setHashRequest {
+  string hash = 1; /// hash for recording
+  string id = 2; /// recording id
+}
+
+/*
+  response with hash
+*/
+message setHashResponse {
+  bool success = 1; /// success
+}
+
+/*
+  Device archive ready message
+*/
+message ArchiveReady {
+  string archiveId = 1;  /// device id
+  string archiveUrl = 2; /// url of archive
+  string archivePath = 4; /// path of archive
+  string size = 5; /// size file of archive
+  string url = 6; /// url file of archive
+  string userId = 7; /// id of archive user
+  string archiveName = 8; /// archive name
+  string status = 9; /// archive status
+}
+
+/*
+  Edit recording ready message
+*/
+message EditReady {
+  string recordingId = 1;  /// recording id
+  string url = 2;
+  string path = 3;
+  string userId = 4;
+  string thumbnailUrl = 5;
+  string thumbnailPath = 6;
+}
+
+/*
+  Recording-data data
+*/
+message RecordingData {
+  string url = 1; /// url of recording
+  string name = 2; /// name of recording
+  string croppedStart = 3; /// cropped start of recording
+  string croppedDuration = 4; /// duration of cropped recording
+  string id = 5; /// recording id
+  string archiveName = 6; /// archive name
+  string isTimestampEnabled = 7; /// enable timestamp
+  string isWatermarkEnabled = 8; /// enable watermark
+  string isBoundingEnabled = 9; /// enable bounding box
+  string timeStart = 10; /// start time of recording
+  string archiveId = 11; /// Id of archive
+  string userId = 12; /// userId 
+}
+
+/*
+  Recording-data message
+*/
+message ArchiveData {
+  repeated RecordingData recordings = 1; /// recordings info
+}
+
+/*
+  Archive recordings response
+*/
+message RecordingsResponse {
+  repeated ArchiveData archives = 1; /// archives info
+}
+
+/*
+  Edit recordings data
+*/
+message RecordingEditData {
+  string recordingId = 1;
+  string url = 2;
+  string contrast = 3;
+  string brightness = 4;
+  string highLight = 5;
+  bool grayScale = 6;
+  string sharpen = 7;
+  repeated string cutStartEnd = 8;
+  string userId = 9;
+}
+
+/*
+  Edit recordings response
+*/
+message RecordingsEditResponse {
+  repeated RecordingEditData recordings = 1; /// recordings filters info
+}
+
+/*
+  Common status response
+*/
+message StatusResponse {
+  bool success = 1; /// where rpc call was success or not
+}

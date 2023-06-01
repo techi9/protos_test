@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+service DevicesScaling {
+  rpc CreateInstance (CreateInstanceRequest) returns (InstanceReply) {}
+  rpc DestroyInstance (DestroyInstanceRequest) returns (DestroyInstanceReply) {}
+}
+
+message CreateInstanceRequest {
+
+}
+
+message InstanceReply {
+
+}
+
+message DestroyInstanceRequest {
+
+}
+
+message DestroyInstanceReply {
+  bool success = 1;
+  string message = 2;
+}

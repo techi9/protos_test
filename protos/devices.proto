@@ -1,0 +1,306 @@
+syntax = "proto3";
+
+service Devices {
+  rpc GetDevicesForMonitoringNode (MonitoringNode) returns (DevicesResponse) {}
+  rpc GetDevicesForRecordingNode(RecordingNodeDevicesService) returns (DevicesResponse) {}
+  rpc GetDevicesForRestreamer (Restreamer) returns (DevicesForRestreamerResponse) {}
+  rpc GetDevicesForDetectionNode(DetectionNode) returns (DeviceForDetectionResponse) {}
+  rpc GetRecordingsForStopping(GetRecordingsForStoppingRequest) returns (ActiveRecordingsResponse) {}
+  rpc ReportDeviceStatusChange (DeviceStatus) returns (StatusResponseDevicesService) {}
+  rpc ReportMotionDetected (MotionDetection) returns (StatusResponseDevicesService) {}
+  rpc ReportMotionBasedRecordingStarted(MotionBasedRecording) returns (StatusResponseDevicesService) {}
+  rpc ReportMotionDetectionDeploymentFailed(MotionDetectionError) returns (StatusResponseDevicesService) {}
+  rpc ReportRecordingStarted (RecordingStarted) returns (StatusResponseDevicesService) {}
+  rpc ReportRecordingFinished (RecordingFinished) returns (StatusResponseDevicesService) {}
+  rpc ReportRecordingError (RecordingError) returns (StatusResponseDevicesService) {}
+  rpc ReportRecordingCorrupted (RecordingCorruptedError) returns (StatusResponseDevicesService) {}
+  rpc ReportRecordingDurationCalculated (DurationReport) returns (StatusResponseDevicesService) {}
+  rpc ReportThumbnailReady(ThumbnailReady) returns (StatusResponseDevicesService) {}
+  rpc ReportFramesReady(FramesReady) returns (StatusResponseDevicesService) {}
+  rpc GetDeviceForFakeAnalytics(FakeAnalyticsRequest) returns (FakeAnalyticsResponse) {}
+  rpc ReportCameraObstructionEvent (CameraObstructionData) returns (StatusResponseDevicesService) {}
+  rpc GetAbandonedObjectTimeout(DeviceRtsp) returns (AbandonedObjectTimeout) {}
+  rpc GetDeviceForFakeCrowdCounting(FakeAnalyticsRequest) returns (FakeAnalyticsResponse) {}
+  rpc ReportDeviceDeployedToRestreamer(ReportDeviceDeployedToRestreamerRequest) returns (DeviceDeployedToRestreamer) {}
+  rpc ReportUpdateSettingsError(ReportUpdateSettingsErrorRequest) returns (StatusResponseDevicesService) {}
+}
+
+message MonitoringNode {}
+
+message RecordingNodeDevicesService {}
+
+message DetectionNode {}
+
+message Restreamer {}
+
+/*
+  Request to get recordings for stop
+*/
+message GetRecordingsForStoppingRequest {
+  int32 limit = 1;
+}
+
+/*
+  Common devices response
+*/
+message DevicesResponse {
+  repeated Device devices = 1; /// device info
+}
+
+/*
+  Devices response for restreamer
+*/
+message DevicesForRestreamerResponse {
+  repeated DeviceForRestreamer devices = 1; /// device info
+}
+
+/*
+  Devices for detection response
+*/
+message DeviceForDetectionResponse {
+  repeated DeviceForDetection devices = 1; /// device for detection info
+}
+
+/*
+  Active recordings response
+*/
+message ActiveRecordingsResponse {
+  repeated Recording recordings = 1; /// device info
+}
+
+/*
+  Device object message
+*/
+message Device {
+  string deviceId = 1; /// device id
+  string rtsp = 2; /// rtsp of device
+}
+
+/*
+  Device for restreamer object message
+*/
+message DeviceForRestreamer {
+  string deviceId = 1; /// device id
+  string rtsp = 2; /// rtsp of device
+}
+
+/*
+  RoiVertice object message
+*/
+message RoiVertice {
+  string _id = 1;
+  string x = 2;
+  string y = 3;
+}
+
+/*
+  Roi vertice Array
+*/
+message RoiVerticArray {
+  repeated RoiVertice vertices = 1;
+}
+
+/*
+  Device object for detection message
+*/
+message DeviceForDetection {
+  string deviceId = 1; /// device id
+  string rtsp = 2; /// rtsp of device
+  RecordingNodeForDetection recordingNode = 3; /// recording node info
+  bool withRecording = 4; /// recording node info
+  repeated RoiVerticArray rois = 5;
+}
+
+/*
+  RecordingNode object message
+*/
+message RecordingNodeForDetection {
+  string _id = 1; /// node id
+  string grpcSocket = 2; /// path of recording
+}
+
+/*
+  Recordings object message
+*/
+message Recording {
+  string deviceId = 1; /// device id
+  string indexPath = 2; /// path of recording
+  string url = 3; /// url of recording
+}
+
+/*
+  Device status message
+*/
+message DeviceStatus {
+  string deviceId = 1; /// device id
+  string status = 2; /// device status
+}
+
+/*
+  Motion detection message
+*/
+message MotionDetection {
+  string deviceId = 1; /// device id
+  string status = 2; /// device status
+}
+
+/*
+  Motion detection message
+*/
+message MotionBasedRecording {
+  string deviceId = 1; /// device id
+  string rtsp = 2; /// device rtsp
+}
+
+/*
+  Device started recording message
+*/
+message RecordingStarted {
+  string deviceId = 1; /// device id
+  string recordingUrl = 2; /// url of recording
+  string recordingPath = 3; /// path of recording
+}
+
+/*
+  Device finished recording message
+*/
+message RecordingFinished {
+  string deviceId = 1; /// device id
+  string recordingUrl = 2; /// url of recording
+  string duration = 3; /// duration of recording
+  string size = 4; /// size file of recording
+  string recordingPath = 5; /// path of recording
+  bool connectionIssues = 6; /// finished due to connection issues
+  bool isRemovedFromDeployment = 7; /// was removed from deployment due to no available space for example
+}
+
+/*
+  Device error recording message
+*/
+message RecordingError {
+  string deviceId = 1; /// device id
+  bool deployedUnsuccessful = 2; /// indicate whether device was deployed successful or not
+}
+
+/*
+  Device recording corrupted
+*/
+message RecordingCorruptedError {
+  string deviceId = 1; /// device id
+  string recordingUrl = 2; /// recording url
+}
+
+/*
+  Device error motion detection message
+*/
+message MotionDetectionError {
+  string deviceId = 1; /// device id
+}
+
+/*
+  Device thumbnail ready message
+*/
+message ThumbnailReady {
+  string deviceId = 1;  /// device id
+  string recordingUrl = 2; /// url of recording
+  string thumbnailUrl = 3; /// url of thumbnail
+  string thumbnailPath = 4; /// path of thumbnail
+  string size = 5; /// size file of thumbnail
+}
+
+/*
+  Device frames ready message
+*/
+message FramesReady {
+  string recordingId = 1;  /// recording id
+  string framesPath = 2; /// path of all frames
+  repeated string framesUrls = 3; /// url of frames
+  string userId = 4; /// user id of requested frames
+}
+
+/*
+  Common status response
+*/
+message StatusResponseDevicesService {
+  bool success = 1; /// where rpc call was success or not
+}
+
+message FakeAnalyticsRequest {
+
+}
+
+/*
+  Fake analytics response
+*/
+message FakeAnalyticsResponse {
+  string deviceId = 1; /// device id
+  string rtsp = 2; /// rtsp of device
+  Analytics analytics = 3; /// list of analytics
+  repeated string rois = 4; /// list of rois
+}
+
+/*
+  Analytics message
+  contains boolean's with available analytics
+*/
+message Analytics {
+  bool peopleTracking = 1;
+  bool fireAndSmokeDetection = 2;
+  bool peopleIntrusionDetection = 3;
+  bool objectIntrusionDetection = 4;
+  bool abandonedObjectDetection = 5;
+}
+
+/*
+  Camera obstruction message
+*/
+message CameraObstructionData {
+  bool isObstructed = 1; /// true if obstructed
+  string rtsp = 2; /// rtsp obstructed camera
+}
+
+/*
+  Camera rtsp message
+*/
+message DeviceRtsp {
+  string rtsp = 1; /// rtsp of camera
+}
+
+/*
+  Abandoned object timeout message
+*/
+message AbandonedObjectTimeout {
+  uint64 timeout = 1; /// timeout for abandoned object
+}
+
+/*
+  Duration report
+*/
+message DurationReport {
+  string deviceId = 1; /// device id
+  string recordingUrl = 2; /// url of recording
+  string duration = 3; /// duration of recording
+  string size = 4; /// size file of recording
+}
+
+/*
+  Report device deployed to restreamer request
+ */
+message ReportDeviceDeployedToRestreamerRequest {
+  string deviceId = 1;
+  string url = 2;
+}
+
+/*
+  Device deployed to restreamer
+*/
+message DeviceDeployedToRestreamer {}
+
+/*
+  Report UpdateSettings Error Request
+*/
+message ReportUpdateSettingsErrorRequest {
+    string device_id = 1; /// Device id
+    repeated string name = 2; /// analytics that failed to be turned on
+    string message = 3; /// Error message
+}
